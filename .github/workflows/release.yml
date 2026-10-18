@@ -1,0 +1,78 @@
+# Bygger en binær pr. platform, når et tag som v1.2.3 pushes, og lægger dem
+# sammen med homewright.json på en GitHub-release. Homewright installerer derfra.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  # navnet på binæren fra Cargo.toml og domænet fra homewright.json
+  BIN: dlna_dmr
+  DOMAIN: dlna_dmr
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-latest, target: x86_64-pc-windows-msvc, ext: .exe }
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-musl, ext: "" }
+          - { os: ubuntu-24.04-arm, target: aarch64-unknown-linux-musl, ext: "" }
+          - { os: macos-latest, target: aarch64-apple-darwin, ext: "" }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - if: contains(matrix.target, 'musl')
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
+      - run: cargo build --release --locked --target ${{ matrix.target }}
+      - shell: bash
+        run: |
+          mkdir dist
+          cp "target/${{ matrix.target }}/release/$BIN${{ matrix.ext }}" "dist/$DOMAIN-${{ matrix.target }}${{ matrix.ext }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}
+          path: dist/*
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      # A release published on github.com already exists; then only add the files.
+      - run: |
+          # release notes: the commit subjects since the previous tag
+          prev=$(git describe --tags --abbrev=0 --match 'v*' "$GITHUB_REF_NAME^" 2>/dev/null || true)
+          {
+            if [ -n "$prev" ]; then echo "## Ændringer siden $prev"; else echo "## Ændringer"; fi
+            echo
+            git log --no-merges --format='- %s' ${prev:+$prev..}"$GITHUB_REF_NAME"
+          } > notes.md
+          cat notes.md
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" dist/* homewright.json --clobber
+            # keep notes written on github.com, fill in an empty release
+            if [ -z "$(gh release view "$GITHUB_REF_NAME" --json body -q .body)" ]; then
+              gh release edit "$GITHUB_REF_NAME" --notes-file notes.md
+            fi
+          else
+            gh release create "$GITHUB_REF_NAME" dist/* homewright.json --title "$GITHUB_REF_NAME" --notes-file notes.md
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}

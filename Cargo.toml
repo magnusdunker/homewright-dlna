@@ -1,0 +1,30 @@
+[package]
+name = "homewright-dlna"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "DLNA-afspillere (TV, receivere og højttalere) som ekstern integration til Homewright"
+publish = false
+
+[[bin]]
+name = "dlna_dmr"
+path = "src/main.rs"
+
+[dependencies]
+thehome-plugin = { git = "https://github.com/magnusdunker/thehome-example-integration-rust", rev = "a8f05c1859f6689b2a31d2188593eb872408385e" }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync", "net", "io-util"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
+quick-xml = "0.37"
+socket2 = "0.5"
+if-addrs = "0.13"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync", "net", "io-util"] }
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true
+codegen-units = 1
