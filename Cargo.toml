@@ -1,6 +1,6 @@
 [package]
 name = "homewright-dlna"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT"
 description = "DLNA-afspillere (TV, receivere og højttalere) som ekstern integration til HomewrightHQ"
