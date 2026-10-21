@@ -1,4 +1,4 @@
-//! The plugin driven over a pipe the way Homewright drives it, against a
+//! The plugin driven over a pipe the way HomewrightHQ drives it, against a
 //! fake renderer on localhost.
 
 mod fake;
@@ -183,7 +183,7 @@ async fn controls_a_renderer() {
 #[tokio::test]
 async fn polls_when_events_do_not_arrive() {
     // subscriptions are accepted, but no event ever comes, as when
-    // Homewright runs in Docker without host networking
+    // HomewrightHQ runs in Docker without host networking
     let r = FakeRenderer::start(false).await;
     let host = start("poll").await;
     host.call("setup_entry", json!({ "entry": entry(&r) })).await.unwrap();

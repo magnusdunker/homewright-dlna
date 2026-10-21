@@ -1,5 +1,5 @@
 # Bygger en binær pr. platform, når et tag som v1.2.3 pushes, og lægger dem
-# sammen med homewright.json på en GitHub-release. Homewright installerer derfra.
+# sammen med homewright.json på en GitHub-release. HomewrightHQ installerer derfra.
 name: Release
 
 on:

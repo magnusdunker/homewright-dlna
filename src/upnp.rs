@@ -12,7 +12,7 @@ pub fn client() -> Client {
     Client::builder()
         .timeout(Duration::from_secs(6))
         .connect_timeout(Duration::from_secs(3))
-        .user_agent("Homewright/1 UPnP/1.0 DLNADOC/1.50")
+        .user_agent("HomewrightHQ/1 UPnP/1.0 DLNADOC/1.50")
         .build()
         .expect("http client")
 }

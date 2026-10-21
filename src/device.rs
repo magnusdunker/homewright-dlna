@@ -1,5 +1,5 @@
 //! One renderer: reads its description, subscribes to its events, polls it,
-//! pushes state to Homewright when it changes and carries out service calls.
+//! pushes state to HomewrightHQ when it changes and carries out service calls.
 //! When it stops answering it becomes unavailable, and it is tried again
 //! every half minute and whenever SSDP sees it.
 
@@ -90,7 +90,7 @@ impl Caller {
     }
 }
 
-/// What was last sent to Homewright, so unchanged states are not sent again.
+/// What was last sent to HomewrightHQ, so unchanged states are not sent again.
 #[derive(PartialEq)]
 enum Published {
     Nothing,

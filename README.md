@@ -1,16 +1,16 @@
-# DLNA til Homewright
+# DLNA til HomewrightHQ
 
-En ekstern integration til [Homewright](https://github.com/magnusdunker/homewright), der styrer DLNA-afspillere (UPnP MediaRenderer) som medieafspillere: smart-tv, receivere, netværkshøjttalere og programmer som Kodi og BubbleUPnP. Den taler UPnP direkte med afspillerne på det lokale netværk.
+En ekstern integration til [HomewrightHQ](https://github.com/magnusdunker/homewrighthq), der styrer DLNA-afspillere (UPnP MediaRenderer) som medieafspillere: smart-tv, receivere, netværkshøjttalere og programmer som Kodi og BubbleUPnP. Den taler UPnP direkte med afspillerne på det lokale netværk.
 
 ## Installation
 
-I Homewright: **Indstillinger → Integrationer → Fra GitHub**. Indsæt
+I HomewrightHQ: **Indstillinger → Integrationer → Fra GitHub**. Indsæt
 
 ```
-https://github.com/magnusdunker/homewright-dlna
+https://github.com/magnusdunker/homewrighthq-dlna
 ```
 
-og tryk **Installér**. Tilføj derefter **DLNA** under **Tilføj integration**. Formularen viser de afspillere, der blev fundet på netværket. Står alle valgt, kommer afspillere, der dukker op senere, også med. Når integrationen er installeret, foreslår Homewright den også selv, når den finder en afspiller.
+og tryk **Installér**. Tilføj derefter **DLNA** under **Tilføj integration**. Formularen viser de afspillere, der blev fundet på netværket. Står alle valgt, kommer afspillere, der dukker op senere, også med. Når integrationen er installeret, foreslår HomewrightHQ den også selv, når den finder en afspiller.
 
 Der er kun én opsætning, og den dækker alle afspillere. Valget kan ændres under integrationens indstillinger.
 
@@ -18,13 +18,13 @@ Sonos-højttalere er også DLNA-afspillere, men de bliver ikke tilføjet, når a
 
 ### Afspillere, som SSDP ikke finder
 
-Afspillerne findes med SSDP, som kun virker på samme netværk. Står en afspiller på et andet VLAN, eller kører Homewright i Docker uden host-netværk, så skriv URL'en til dens enhedsbeskrivelse under **Ekstra adresser**, f.eks. `http://192.168.20.15:9197/dmr`. Flere adresser adskilles med komma. Adressen prøves, når du gemmer, og integrationen prøver igen hvert 30. sekund, hvis afspilleren er væk ved opstart.
+Afspillerne findes med SSDP, som kun virker på samme netværk. Står en afspiller på et andet VLAN, eller kører HomewrightHQ i Docker uden host-netværk, så skriv URL'en til dens enhedsbeskrivelse under **Ekstra adresser**, f.eks. `http://192.168.20.15:9197/dmr`. Flere adresser adskilles med komma. Adressen prøves, når du gemmer, og integrationen prøver igen hvert 30. sekund, hvis afspilleren er væk ved opstart.
 
 URL'en står i afspillerens svar på en SSDP-søgning (`LOCATION`). Programmer som "UPnP Inspector" eller `gssdp-discover` viser den.
 
 ## Hvad du får
 
-Hver afspiller bliver en enhed i Homewright med én medieafspiller. Navnet er det, afspilleren selv oplyser. Et tv får enhedsklassen `tv`.
+Hver afspiller bliver en enhed i HomewrightHQ med én medieafspiller. Navnet er det, afspilleren selv oplyser. Et tv får enhedsklassen `tv`.
 
 Tilstanden er:
 
@@ -64,15 +64,15 @@ Er `media_content_type` ikke en MIME-type, gættes den ud fra URL'ens endelse. I
 
 Integrationen abonnerer på afspillerens hændelser (UPnP GENA). Afspilleren sender selv sin tilstand til en lille HTTP-server i integrationen, når den ændrer sig. Indtil den første hændelse er kommet, og hvis den aldrig kommer, spørger integrationen afspilleren hvert 5. sekund. Når hændelserne kommer, spørger den kun hvert 30. sekund for at opdage en afspiller, der er forsvundet.
 
-Hændelserne kræver, at afspilleren kan nå Homewright. I Docker uden host-netværk, eller bag en firewall, kommer de ikke frem, og så klarer spørgsmålene det alene. Under **Port til hændelser** kan du sætte en fast port, hvis den skal åbnes i en firewall. Diagnosticeringen viser for hver afspiller, om hændelserne når frem.
+Hændelserne kræver, at afspilleren kan nå HomewrightHQ. I Docker uden host-netværk, eller bag en firewall, kommer de ikke frem, og så klarer spørgsmålene det alene. Under **Port til hændelser** kan du sætte en fast port, hvis den skal åbnes i en firewall. Diagnosticeringen viser for hver afspiller, om hændelserne når frem.
 
 Svarer en afspiller ikke to gange i træk, bliver den utilgængelig. Integrationen prøver den igen hvert 30. sekund og med det samme, når SSDP ser den igen. SSDP spørges hvert minut, så en afspiller, der skifter IP-adresse, bliver fundet på den nye.
 
-Integrationen husker, hvor SSDP sidst fandt hver afspiller. Er et tv slukket, når Homewright starter, findes medieafspilleren alligevel og står som utilgængelig, til tv'et tændes.
+Integrationen husker, hvor SSDP sidst fandt hver afspiller. Er et tv slukket, når HomewrightHQ starter, findes medieafspilleren alligevel og står som utilgængelig, til tv'et tændes.
 
 ## Udvikling
 
-Bygget i Rust på SDK'en `thehome-plugin` fra [homewright-example-integration-rust](https://github.com/magnusdunker/homewright-example-integration-rust).
+Bygget i Rust på SDK'en `thehome-plugin` fra [homewright-example-integration-rust](https://github.com/magnusdunker/homewrighthq-example-integration-rust).
 
 - `src/ssdp.rs`: SSDP-søgning på alle netkort
 - `src/upnp.rs`: enhedsbeskrivelse, servicebeskrivelser (SCPD), SOAP og GENA-abonnementer
@@ -80,8 +80,8 @@ Bygget i Rust på SDK'en `thehome-plugin` fra [homewright-example-integration-ru
 - `src/device.rs`: én afspiller: abonnementer, spørgsmål, tjenester og genforbindelse
 - `src/status.rs`: fra afspillerens tilstand til tilstand og attributter, og DIDL-Lite
 - `src/xml.rs`: en lille XML-parser
-- `src/lib.rs`: opsætningen og forbindelsen til Homewright
-- `tests/`: tests mod en falsk afspiller i `tests/fake` og en falsk Homewright i `tests/host`
+- `src/lib.rs`: opsætningen og forbindelsen til HomewrightHQ
+- `tests/`: tests mod en falsk afspiller i `tests/fake` og en falsk HomewrightHQ i `tests/host`
 
 ```
 cargo test

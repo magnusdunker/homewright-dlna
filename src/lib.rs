@@ -1,10 +1,10 @@
 //! DLNA: UPnP media renderers (TVs, receivers, speakers) as media players
-//! in Homewright. An external integration.
+//! in HomewrightHQ. An external integration.
 //!
 //! One setup covers every renderer on the network. Renderers are found with
 //! SSDP while the setup runs and every minute after, plus any description
 //! URLs the user typed for renderers SSDP cannot reach. The locations found
-//! are remembered, so a renderer that is off when Homewright starts still
+//! are remembered, so a renderer that is off when HomewrightHQ starts still
 //! gets its media player. Each renderer pushes its state through GENA events
 //! and is polled as well.
 
@@ -31,7 +31,7 @@ const RESEARCH: Duration = Duration::from_secs(60);
 /// How often a URL the user typed is tried while the renderer is away.
 const MANUAL_RETRY: Duration = Duration::from_secs(30);
 
-/// Logging to Homewright's log through stderr.
+/// Logging to HomewrightHQ's log through stderr.
 #[doc(hidden)]
 pub fn emit(level: &str, message: String) {
     thehome_plugin::log(level, message);

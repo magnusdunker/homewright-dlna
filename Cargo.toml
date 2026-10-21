@@ -3,7 +3,7 @@ name = "homewright-dlna"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
-description = "DLNA-afspillere (TV, receivere og højttalere) som ekstern integration til Homewright"
+description = "DLNA-afspillere (TV, receivere og højttalere) som ekstern integration til HomewrightHQ"
 publish = false
 
 [[bin]]
