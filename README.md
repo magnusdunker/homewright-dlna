@@ -1,48 +1,48 @@
-# DLNA til HomewrightHQ
+# DLNA for HomewrightHQ
 
-En ekstern integration til [HomewrightHQ](https://github.com/magnusdunker/homewrighthq), der styrer DLNA-afspillere (UPnP MediaRenderer) som medieafspillere: smart-tv, receivere, netværkshøjttalere og programmer som Kodi og BubbleUPnP. Den taler UPnP direkte med afspillerne på det lokale netværk.
+An external integration for [HomewrightHQ](https://github.com/magnusdunker/homewrighthq) that controls DLNA players (UPnP MediaRenderer) as media players: smart TVs, receivers, network speakers and programs such as Kodi and BubbleUPnP. It talks UPnP directly with the players on the local network.
 
 ## Installation
 
-I HomewrightHQ: **Indstillinger → Integrationer → Fra GitHub**. Indsæt
+In HomewrightHQ: **Settings → Integrations → From GitHub**. Paste
 
 ```
 https://github.com/magnusdunker/homewrighthq-dlna
 ```
 
-og tryk **Installér**. Tilføj derefter **DLNA** under **Tilføj integration**. Formularen viser de afspillere, der blev fundet på netværket. Står alle valgt, kommer afspillere, der dukker op senere, også med. Når integrationen er installeret, foreslår HomewrightHQ den også selv, når den finder en afspiller.
+and press **Install**. Then add **DLNA** under **Add integration**. The form shows the players that were found on the network. If all are selected, players that show up later are included too. Once the integration is installed, HomewrightHQ also suggests it by itself when it finds a player.
 
-Der er kun én opsætning, og den dækker alle afspillere. Valget kan ændres under integrationens indstillinger.
+There is only one entry, and it covers all players. The selection can be changed under the integration's options.
 
-Sonos-højttalere er også DLNA-afspillere, men de bliver ikke tilføjet, når alle er valgt, fordi de har deres egen integration. Vælg dem enkeltvis, hvis du vil have dem med her.
+Sonos speakers are DLNA players too, but they are not added when all are selected, because they have their own integration. Select them one by one if you want them here.
 
-### Afspillere, som SSDP ikke finder
+### Players that SSDP does not find
 
-Afspillerne findes med SSDP, som kun virker på samme netværk. Står en afspiller på et andet VLAN, eller kører HomewrightHQ i Docker uden host-netværk, så skriv URL'en til dens enhedsbeskrivelse under **Ekstra adresser**, f.eks. `http://192.168.20.15:9197/dmr`. Flere adresser adskilles med komma. Adressen prøves, når du gemmer, og integrationen prøver igen hvert 30. sekund, hvis afspilleren er væk ved opstart.
+The players are found with SSDP, which only works on the same network. If a player is on another VLAN, or HomewrightHQ runs in Docker without host networking, enter the URL of its device description under **Ekstra adresser** (extra addresses), e.g. `http://192.168.20.15:9197/dmr`. Separate several addresses with commas. The address is tried when you save, and the integration tries again every 30 seconds if the player is gone at startup.
 
-URL'en står i afspillerens svar på en SSDP-søgning (`LOCATION`). Programmer som "UPnP Inspector" eller `gssdp-discover` viser den.
+The URL is in the player's reply to an SSDP search (`LOCATION`). Programs such as "UPnP Inspector" or `gssdp-discover` show it.
 
-## Hvad du får
+## What you get
 
-Hver afspiller bliver en enhed i HomewrightHQ med én medieafspiller. Navnet er det, afspilleren selv oplyser. Et tv får enhedsklassen `tv`.
+Each player becomes a device in HomewrightHQ with one media player. The name is the one the player reports itself. A TV gets the device class `tv`.
 
-Tilstanden er:
+The state is:
 
-- **playing**, **paused** og **buffering** efter afspillerens AVTransport
-- **idle**, når den er stoppet eller intet har indlæst
-- **unavailable**, når den ikke svarer, f.eks. fordi tv'et er slukket
+- **playing**, **paused** and **buffering** according to the player's AVTransport
+- **idle** when it is stopped or has nothing loaded
+- **unavailable** when it does not respond, e.g. because the TV is switched off
 
-DLNA har ingen tænd og sluk, så `turn_on` og `turn_off` findes ikke.
+DLNA has no power on and off, so `turn_on` and `turn_off` do not exist.
 
-Attributterne følger Home Assistant: `volume_level`, `is_volume_muted`, `media_content_id`, `media_content_type`, `media_title`, `media_artist`, `media_album_name`, `media_album_artist`, `media_track`, `media_duration`, `media_position`, `media_position_updated_at`, `entity_picture`, `shuffle`, `repeat` og `supported_features`. Titel, kunstner og omslag kommer fra afspillerens DIDL-Lite-metadata. Mangler titlen, bruges filnavnet fra URL'en.
+The attributes follow Home Assistant: `volume_level`, `is_volume_muted`, `media_content_id`, `media_content_type`, `media_title`, `media_artist`, `media_album_name`, `media_album_artist`, `media_track`, `media_duration`, `media_position`, `media_position_updated_at`, `entity_picture`, `shuffle`, `repeat` and `supported_features`. Title, artist and cover art come from the player's DIDL-Lite metadata. If the title is missing, the file name from the URL is used.
 
-Tjenesterne er:
+The services are:
 
-- `media_play`, `media_pause`, `media_play_pause`, `media_stop` og `media_seek`
-- `media_next_track` og `media_previous_track`
-- `volume_set`, `volume_mute`, `volume_up` og `volume_down` (5 % af skalaen ad gangen)
-- `shuffle_set` og `repeat_set`, når afspilleren har de afspilningstilstande
-- `play_media` afspiller en URL:
+- `media_play`, `media_pause`, `media_play_pause`, `media_stop` and `media_seek`
+- `media_next_track` and `media_previous_track`
+- `volume_set`, `volume_mute`, `volume_up` and `volume_down` (5 % of the scale at a time)
+- `shuffle_set` and `repeat_set`, when the player has those play modes
+- `play_media` plays a URL:
 
 ```yaml
 action: media_player.play_media
@@ -50,46 +50,46 @@ target:
   entity_id: media_player.stue_tv
 data:
   media_content_id: http://nas.lan/musik/sang.mp3
-  media_content_type: music        # eller en MIME-type som audio/mpeg
+  media_content_type: music        # or a MIME type such as audio/mpeg
   extra:
     title: Sang
     thumb: http://nas.lan/musik/cover.jpg
 ```
 
-Er `media_content_type` ikke en MIME-type, gættes den ud fra URL'ens endelse. Integrationen slår MIME-typen op i afspillerens liste over formater (`GetProtocolInfo`) og bruger dens egne DLNA-flag, så afspillere, der er kræsne med `protocolInfo`, tager imod mediet. Den stopper det, der spiller, sætter den nye URL og trykker afspil.
+If `media_content_type` is not a MIME type, it is guessed from the URL's extension. The integration looks up the MIME type in the player's list of formats (`GetProtocolInfo`) and uses the player's own DLNA flags, so players that are picky about `protocolInfo` accept the media. It stops what is playing, sets the new URL and presses play.
 
-`supported_features` følger det, afspilleren kan lige nu: står der intet i den, kan den ikke afspille eller sætte på pause, men den kan godt få en URL med `play_media`.
+`supported_features` follows what the player can do right now: if it lists nothing, the player cannot play or pause, but it can still take a URL with `play_media`.
 
-### Hændelser og spørgsmål
+### Events and polling
 
-Integrationen abonnerer på afspillerens hændelser (UPnP GENA). Afspilleren sender selv sin tilstand til en lille HTTP-server i integrationen, når den ændrer sig. Indtil den første hændelse er kommet, og hvis den aldrig kommer, spørger integrationen afspilleren hvert 5. sekund. Når hændelserne kommer, spørger den kun hvert 30. sekund for at opdage en afspiller, der er forsvundet.
+The integration subscribes to the player's events (UPnP GENA). The player sends its state to a small HTTP server in the integration by itself when it changes. Until the first event has arrived, and if it never arrives, the integration polls the player every 5 seconds. Once events arrive, it only polls every 30 seconds to notice a player that has disappeared.
 
-Hændelserne kræver, at afspilleren kan nå HomewrightHQ. I Docker uden host-netværk, eller bag en firewall, kommer de ikke frem, og så klarer spørgsmålene det alene. Under **Port til hændelser** kan du sætte en fast port, hvis den skal åbnes i en firewall. Diagnosticeringen viser for hver afspiller, om hændelserne når frem.
+Events require that the player can reach HomewrightHQ. In Docker without host networking, or behind a firewall, they do not get through, and then polling handles it alone. Under **Port til hændelser** (port for events) you can set a fixed port if it has to be opened in a firewall. The diagnostics show for each player whether events get through.
 
-Svarer en afspiller ikke to gange i træk, bliver den utilgængelig. Integrationen prøver den igen hvert 30. sekund og med det samme, når SSDP ser den igen. SSDP spørges hvert minut, så en afspiller, der skifter IP-adresse, bliver fundet på den nye.
+If a player does not respond twice in a row, it becomes unavailable. The integration tries it again every 30 seconds and straight away when SSDP sees it again. SSDP is queried every minute, so a player that changes IP address is found at the new one.
 
-Integrationen husker, hvor SSDP sidst fandt hver afspiller. Er et tv slukket, når HomewrightHQ starter, findes medieafspilleren alligevel og står som utilgængelig, til tv'et tændes.
+The integration remembers where SSDP last found each player. If a TV is off when HomewrightHQ starts, the media player is still created and shows as unavailable until the TV is switched on.
 
-## Udvikling
+## Development
 
-Bygget i Rust på SDK'en `thehome-plugin` fra [homewright-example-integration-rust](https://github.com/magnusdunker/homewrighthq-example-integration-rust).
+Built in Rust on the `thehome-plugin` SDK from [homewright-example-integration-rust](https://github.com/magnusdunker/homewrighthq-example-integration-rust).
 
-- `src/ssdp.rs`: SSDP-søgning på alle netkort
-- `src/upnp.rs`: enhedsbeskrivelse, servicebeskrivelser (SCPD), SOAP og GENA-abonnementer
-- `src/events.rs`: HTTP-serveren, der tager imod hændelserne
-- `src/device.rs`: én afspiller: abonnementer, spørgsmål, tjenester og genforbindelse
-- `src/status.rs`: fra afspillerens tilstand til tilstand og attributter, og DIDL-Lite
-- `src/xml.rs`: en lille XML-parser
-- `src/lib.rs`: opsætningen og forbindelsen til HomewrightHQ
-- `tests/`: tests mod en falsk afspiller i `tests/fake` og en falsk HomewrightHQ i `tests/host`
+- `src/ssdp.rs`: SSDP search on all network interfaces
+- `src/upnp.rs`: device description, service descriptions (SCPD), SOAP and GENA subscriptions
+- `src/events.rs`: the HTTP server that receives the events
+- `src/device.rs`: one player: subscriptions, polling, services and reconnection
+- `src/status.rs`: from the player's status to state and attributes, and DIDL-Lite
+- `src/xml.rs`: a small XML parser
+- `src/lib.rs`: the setup and the connection to HomewrightHQ
+- `tests/`: tests against a fake player in `tests/fake` and a fake HomewrightHQ in `tests/host`
 
 ```
 cargo test
 cargo build --release
 ```
 
-En ny version udgives med et tag, f.eks. `git tag v0.2.0 && git push origin v0.2.0`. Workflowet bygger til Windows, Linux (x86_64 og arm64, statisk musl) og macOS og lægger binærerne på releasen sammen med `homewright.json`.
+A new version is released with a tag, e.g. `git tag v0.2.0 && git push origin v0.2.0`. The workflow builds for Windows, Linux (x86_64 and arm64, static musl) and macOS and puts the binaries on the release together with `homewright.json`.
 
-## Licens
+## License
 
 MIT
